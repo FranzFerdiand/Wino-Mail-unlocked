@@ -1,0 +1,28 @@
+name: Build Wino Mail
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+
+    - name: Restore NuGet packages
+      run: nuget restore Wino.sln
+
+    - name: Build solution
+      run: msbuild /p:Configuration=Release /p:Platform="x64" Wino.sln
+
+    # Add more steps as needed, such as running tests or packaging the app
