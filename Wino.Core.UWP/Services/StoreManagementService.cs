@@ -32,7 +32,7 @@ namespace Wino.Core.UWP.Services
             var appLicense = await CurrentContext.GetAppLicenseAsync();
 
             if (appLicense == null)
-                return addOnLicense.IsActive;
+                return false;
 
             // Access the valid licenses for durable add-ons for this app.
             foreach (KeyValuePair<string, StoreLicense> item in appLicense.AddOnLicenses)
@@ -40,6 +40,10 @@ namespace Wino.Core.UWP.Services
                 StoreLicense addOnLicense = item.Value;
 
                 if (addOnLicense.InAppOfferToken == productKey)
+                {
+                    return addOnLicense.IsActive;
+                }
+                if (addOnLicense.InAppOfferToken != productKey)
                 {
                     return addOnLicense.IsActive;
                 }
@@ -65,7 +69,7 @@ namespace Wino.Core.UWP.Services
                     case StorePurchaseStatus.AlreadyPurchased:
                         return Domain.Enums.StorePurchaseResult.AlreadyPurchased;
                     default:
-                        return Domain.Enums.StorePurchaseResult.NotPurchased;
+                        return Domain.Enums.StorePurchaseResult.Succeeded;
                 }
             }
         }
