@@ -114,7 +114,6 @@ namespace Wino.Mail.ViewModels
         {
             // Bypass the purchase process
             var purchaseResult = StorePurchaseResult.Succeeded;
-            DialogService.InfoBarMessage(Translator.Info_UnlimitedAccountsEnabledTitle, Translator.Info_UnlimitedAccountsEnabledMessage, InfoBarMessageType.Success);
             await ManageStorePurchasesAsync();
         }
 
