@@ -13,16 +13,28 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.5
+    - name: Decode the pfx
+      run: |
+        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.BASE64_ENCODED_PFX }}")
+        $currentDirectory = Get-Location
+        $certificatePath = Join-Path -Path $currentDirectory -ChildPath "WinoMail.pfx"
+        [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
 
-    - name: Restore NuGet packages
-      run: nuget restore Wino.sln
+    - name: Restore dependencies
+      run: dotnet restore Wino.sln
 
     - name: Build solution
-      run: msbuild /p:Configuration=Release /p:Platform="x64" Wino.sln
+      run: dotnet build --configuration Release --no-restore -r win-x64 Wino.sln
+
+    - name: Publish
+      run: dotnet publish --configuration Release --no-build --output ./publish -r win-x64 Wino.sln
 
     # Add more steps as needed, such as running tests or packaging the app
