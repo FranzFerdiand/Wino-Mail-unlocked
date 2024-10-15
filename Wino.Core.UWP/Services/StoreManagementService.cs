@@ -32,7 +32,7 @@ namespace Wino.Core.UWP.Services
             var appLicense = await CurrentContext.GetAppLicenseAsync();
 
             if (appLicense == null)
-                return false;
+                return addOnLicense.IsActive;
 
             // Access the valid licenses for durable add-ons for this app.
             foreach (KeyValuePair<string, StoreLicense> item in appLicense.AddOnLicenses)
