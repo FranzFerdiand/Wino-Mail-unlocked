@@ -32,9 +32,9 @@ jobs:
       run: dotnet restore Wino.sln
 
     - name: Build solution
-      run: dotnet build --configuration Release --no-restore -r win-x64 Wino.sln
+      run: dotnet build --configuration Release --no-restore Wino.sln
 
     - name: Publish
-      run: dotnet publish --configuration Release --no-build --output ./publish -r win-x64 Wino.sln
+      run: dotnet publish --configuration Release --no-build --output ./publish Wino.sln
 
     # Add more steps as needed, such as running tests or packaging the app
