@@ -26,47 +26,15 @@ public class StoreManagementService : IStoreManagementService
         CurrentContext = StoreContext.GetDefault();
     }
 
-    public async Task<bool> HasProductAsync(StoreProductType productType)
+    public Task<bool> HasProductAsync(StoreProductType productType)
     {
-        var productKey = productIds[productType];
-        var appLicense = await CurrentContext.GetAppLicenseAsync();
-
-        if (appLicense == null)
-            return false;
-
-        // Access the valid licenses for durable add-ons for this app.
-        foreach (KeyValuePair<string, StoreLicense> item in appLicense.AddOnLicenses)
-        {
-            StoreLicense addOnLicense = item.Value;
-
-            if (addOnLicense.InAppOfferToken == productKey)
-            {
-                return addOnLicense.IsActive;
-            }
-        }
-
-        return false;
+        // Always return true to unlock all features (Unlimited Accounts)
+        return Task.FromResult(true);
     }
 
-    public async Task<Domain.Enums.StorePurchaseResult> PurchaseAsync(StoreProductType productType)
+    public Task<Domain.Enums.StorePurchaseResult> PurchaseAsync(StoreProductType productType)
     {
-        if (await HasProductAsync(productType))
-            return Domain.Enums.StorePurchaseResult.AlreadyPurchased;
-        else
-        {
-            var productKey = skuIds[productType];
-
-            var result = await CurrentContext.RequestPurchaseAsync(productKey);
-
-            switch (result.Status)
-            {
-                case StorePurchaseStatus.Succeeded:
-                    return Domain.Enums.StorePurchaseResult.Succeeded;
-                case StorePurchaseStatus.AlreadyPurchased:
-                    return Domain.Enums.StorePurchaseResult.AlreadyPurchased;
-                default:
-                    return Domain.Enums.StorePurchaseResult.NotPurchased;
-            }
-        }
+        // Prevent actual purchase attempts since features are unlocked
+        return Task.FromResult(Domain.Enums.StorePurchaseResult.AlreadyPurchased);
     }
 }
